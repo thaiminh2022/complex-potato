@@ -1,12 +1,13 @@
 import { Button, Group, Stack } from "@mantine/core";
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import { staticLinkPaths } from "../../data/staticPaths";
-import AskPermissionForm from "../AskPermissionForm";
+import { staticLinkPaths } from "../../../data/staticPaths";
 import { v4 as idv4 } from "uuid";
+import AskPermissionForm from "../AskPermissionForm";
 
-function NewPermission(props: NewPermissionProps) {
+function UserNewPerm(props: UserNewPermProps) {
     const onSubmit = (data: RawAskPermissionForm) => {
+
         const formData: AskPermissionForm = {
 
             id: idv4(),
@@ -35,7 +36,11 @@ function NewPermission(props: NewPermissionProps) {
     </>;
 }
 
-interface NewPermissionProps {
+interface UserNewPermProps {
     setPapers: React.Dispatch<React.SetStateAction<AskPermissionForm[]>>
 }
-export default NewPermission;
+export default UserNewPerm;
+
+function useAuth(): null | string {
+    return ""
+}

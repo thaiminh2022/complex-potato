@@ -13,21 +13,22 @@ function AskPermissionForm(props: AskPermissionFormProps) {
     const [classData, setClassData] = useState("");
 
     const readonly = props.readonly;
+    const defaultData = props.startData;
 
     const form = useForm<RawAskPermissionForm>({
         initialValues: {
-            parentName: "",
-            parentPhoneNumber: "",
-            studentName: "",
-            studentIndex: 0,
+            parentName: defaultData?.parentName ?? "",
+            parentPhoneNumber: defaultData?.parentName ?? "",
+            studentName: defaultData?.studentName ?? "",
+            studentIndex: defaultData?.studentIndex ?? 0,
 
-            grade: "",
-            gradeIndex: "",
+            grade: defaultData?.grade ?? "",
+            gradeIndex: defaultData?.gradeIndex ?? "",
 
-            reason: "",
+            reason: defaultData?.reason ?? "",
 
-            dateData: new Date,
-            imageStr64: ""
+            dateData: defaultData?.dateData ?? new Date,
+            imageStr64: defaultData?.imageStr64 ?? ""
         },
 
         validate: {
@@ -124,6 +125,8 @@ function AskPermissionForm(props: AskPermissionFormProps) {
 interface AskPermissionFormProps {
     readonly?: boolean,
     onSubmit: (v: RawAskPermissionForm) => void
+
+    startData?: RawAskPermissionForm,
 
 }
 export default AskPermissionForm;

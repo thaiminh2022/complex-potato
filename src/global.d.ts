@@ -33,4 +33,14 @@ declare global {
         subject: string,
         date: Date
     }
+
+
+    // Register Form
+    type UserData = {
+        email: string,
+        fullName: string,
+        phoneNumber: string,
+
+        refImage: string
+    }
 }

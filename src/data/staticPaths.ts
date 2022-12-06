@@ -1,8 +1,7 @@
 export const staticLinkPaths = {
     home: "/",
-    newPerm: "/xinphepmoi",
-    perms: "/xinphep",
+    xinphep: "/xinphep",
+    thongbao: "/thongbao",
     user: "/user",
-    login: "/user/login",
-    register: "/user/register",
+
 }
