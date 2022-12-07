@@ -2,6 +2,7 @@ import { Container } from '@mantine/core'
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import LoginPage from './Components/Logins/LoginPage'
 import RegisterPage from './Components/Registers/RegisterPage'
+import UserNewPerm from './Components/XinPhep/User/UserNewPerm'
 import { staticLinkPaths } from './data/staticPaths'
 import { useLocalStorage } from './hooks/useLocalStorage'
 
@@ -21,13 +22,9 @@ function App() {
           {homeRoute}
 
           <Route path={staticLinkPaths.xinphep} element={<Outlet />}>
-            <Route index element={<Navigate to="/" />} />
-
-            <Route path='user' element={<Outlet />}>
-              <Route index />
-              <Route path="new" />
-              <Route path=":id" />
-            </Route>
+            <Route index element={<h1>View</h1>} />
+            <Route path="new" element={<UserNewPerm />} />
+            <Route path=":id" element={<h1>Edit</h1>} />
 
             {isAdmin && (
               <>

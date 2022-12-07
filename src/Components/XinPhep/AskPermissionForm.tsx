@@ -1,9 +1,9 @@
 import { Button, NumberInput, Textarea, TextInput, Select, Image, Group, Stack, Flex, Avatar } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useEffect, useState } from "react";
-import WebcamComponent from "./WebcamComponent";
 import { Modal } from '@mantine/core';
 import { Link } from "react-router-dom";
+import WebcamComponent from "../Public/WebcamComponent";
 
 const classCheckPattern = /^((10A)|(11B)|(12C))(\d[1-9])/i;
 

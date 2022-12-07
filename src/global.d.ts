@@ -4,11 +4,13 @@ declare global {
 
     // Permission form
     type AskPermissionForm = {
-        id: string,
+        id?: string,
         uid: string
 
         submitDate: Date,
-        isLocked: boolean
+        verified: "Accepted" | "Rejected" | "None"
+        reasons: string,
+
     } & RawAskPermissionForm
 
     type RawAskPermissionForm = {
@@ -23,24 +25,20 @@ declare global {
         studentIndex: number,
 
         reason: string,
-        dateData: Date | SubjectIndex,
+        dateData: Date,
 
         imageStr64: string,
     }
 
-    type SubjectIndex = {
-        subjectIndex: number,
-        subject: string,
-        date: Date
-    }
-
-
     // Register Form
     type UserData = {
+        id: string
+
         email: string,
         fullName: string,
         phoneNumber: string,
 
         refImage: string
+        isAdmin: boolean
     }
 }

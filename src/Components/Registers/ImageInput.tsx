@@ -1,7 +1,7 @@
 import { Button, Modal } from "@mantine/core";
 import { UseFormReturnType } from "@mantine/form";
 import React, { useState } from "react";
-import WebcamComponent from "../WebcamComponent";
+import WebcamComponent from "../Public/WebcamComponent";
 import { RegisterFormType } from "./RegisterPage";
 
 function ImageInput({ form, opened, setOpened }: ImageInputProps) {
