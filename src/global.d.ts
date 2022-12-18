@@ -2,14 +2,21 @@ export { }
 
 declare global {
 
+    type Gender = "Male" | "Female"
+    type FormStatus = "Accepted" | "Rejected" | "Pending"
+    type Student = {
+        name: string,
+        class: string
+    }
+
     // Permission form
     type AskPermissionForm = {
         id?: string,
         uid: string
 
         submitDate: Date,
-        verified: "Accepted" | "Rejected" | "None"
-        reasons: string,
+        verified: FormStatus
+        verifiedReasons: string,
 
     } & RawAskPermissionForm
 
@@ -17,28 +24,36 @@ declare global {
         parentName: string,
         parentPhoneNumber: string,
         studentName: string,
-
         grade: string,
-        gradeIndex: string,
-
 
         studentIndex: number,
 
         reason: string,
         dateData: Date,
 
-        imageStr64: string,
+        imgStr: string,
     }
 
     // Register Form
     type UserData = {
-        id: string
+        id?: string
 
+        createdDate: Date
+        isAdmin: boolean
+    } & RawUserData
+    type RawUserData = {
+        // CCCD data
         email: string,
-        fullName: string,
+        CCCDName: string,
+        genderCCCD: Gender
         phoneNumber: string,
+        idCCCD: string
+
+        // May or may not 
+        parentOf: Student[]
 
         refImage: string
-        isAdmin: boolean
+        refMatcher: string
     }
+
 }

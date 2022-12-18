@@ -1,82 +1,42 @@
-import { Button, NumberInput, Textarea, TextInput, Select, Image, Group, Stack, Flex, Avatar } from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { NumberInput, Textarea, TextInput, Group, Stack } from "@mantine/core";
+import { useForm, UseFormReturnType } from "@mantine/form"
+import { DatePicker } from "@mantine/dates";
+
 import { useEffect, useState } from "react";
-import { Modal } from '@mantine/core';
-import { Link } from "react-router-dom";
-import WebcamComponent from "../Public/WebcamComponent";
+import dayjs from "dayjs";
 
 const classCheckPattern = /^((10A)|(11B)|(12C))(\d[1-9])/i;
 
 function AskPermissionForm(props: AskPermissionFormProps) {
-
-    const [opened, setOpened] = useState(false);
-    const [classData, setClassData] = useState("");
-
     const readonly = props.readonly;
-    const defaultData = props.startData;
+    const val = props.startValue;
 
     const form = useForm<RawAskPermissionForm>({
         initialValues: {
-            parentName: defaultData?.parentName ?? "",
-            parentPhoneNumber: defaultData?.parentName ?? "",
-            studentName: defaultData?.studentName ?? "",
-            studentIndex: defaultData?.studentIndex ?? 0,
+            parentName: val?.parentName ?? "",
+            parentPhoneNumber: val?.parentPhoneNumber ?? "",
+            studentName: val?.studentName ?? "",
+            studentIndex: val?.studentIndex ?? 0,
 
-            grade: defaultData?.grade ?? "",
-            gradeIndex: defaultData?.gradeIndex ?? "",
+            grade: val?.grade ?? "",
 
-            reason: defaultData?.reason ?? "",
+            reason: val?.reason ?? "",
 
-            dateData: defaultData?.dateData ?? new Date,
-            imageStr64: defaultData?.imageStr64 ?? ""
+            dateData: val?.dateData ?? new Date,
+            imgStr: val?.imgStr ?? "",
+
         },
 
         validate: {
-            grade: v => v ? undefined : "Need some grade",
-            gradeIndex: v => v ? undefined : "Need some grade",
-            imageStr64: v => v ? undefined : "Wtf"
+            grade: v => classCheckPattern.test(v) ? undefined : "Not correct format",
         }
     })
-
-    const onCapture = (data: () => string | null) => {
-
-        const onDataClick = () => {
-
-            const finalData = data();
-            console.log(finalData)
-            form.setFieldValue("imageStr64", finalData ?? "");
-
-            setOpened(false)
-        }
-
-        return (
-            <>
-                <Button type="button" onClick={() => onDataClick()}>CAPTURE AN IMAGE</Button>
-            </>
-        )
-    }
-
-    useEffect(() => {
-        if (classData.length != 5 || !classCheckPattern.test(classData))
-            return;
-
-        //11b04
-        const dummy = classData.trim();
-
-        const grade = dummy.slice(0, 3);
-        const gradeIndex = dummy.slice(3, 5);
-
-        form.setFieldValue("grade", grade);
-        form.setFieldValue("gradeIndex", gradeIndex);
-
-    }, [classData])
-
 
 
 
 
     return (
-        <form onSubmit={form.onSubmit(props.onSubmit)}>
+        <form onSubmit={form.onSubmit(props.onSubmit)} id={props.formID}>
             <Group grow>
 
                 <TextInput label="Parents Name" required readOnly={readonly} {...form.getInputProps("parentName")} />
@@ -94,39 +54,27 @@ function AskPermissionForm(props: AskPermissionFormProps) {
                     required
                     placeholder="Enter class, eg: 11B04, 10b12"
                     readOnly={readonly}
-                    value={classData}
-                    onChange={e => setClassData(e.target.value)} />
+                    {...form.getInputProps("grade")}
+                />
             </Group>
 
-            <Textarea label="Reason" minRows={10} readOnly={readonly} {...form.getInputProps("reason")} required />
-
-            <div>
-                <Modal
-                    opened={opened}
-                    onClose={() => setOpened(false)}
-                    size="auto"
-                >
-                    <WebcamComponent capture={(data) => onCapture(data)} />
-                </Modal>
-            </div>
-
-            <Group position="apart" mt={"md"}>
-                <Group>
-                    <Button variant="light" type="submit">Submit the form</Button>
-                    <Button onClick={() => setOpened(true)}>Capture</Button>
+            <Stack>
+                <Textarea label="Reason" minRows={10} readOnly={readonly} {...form.getInputProps("reason")} required />
+                <Group position={"right"}>
+                    <p>Perm time: </p>
+                    <DatePicker {...form.getInputProps("dateData")} required disabled={readonly} />
                 </Group>
-                <Avatar src={form.values.imageStr64 ?? undefined} alt="parent-image" size={"xl"} radius="lg" />
-            </Group>
-
+            </Stack>
         </form>
     );
 }
 
 interface AskPermissionFormProps {
+    formID?: string,
+
     readonly?: boolean,
     onSubmit: (v: RawAskPermissionForm) => void
-
-    startData?: RawAskPermissionForm,
+    startValue?: RawAskPermissionForm
 
 }
 export default AskPermissionForm;

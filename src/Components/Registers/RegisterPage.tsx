@@ -1,107 +1,226 @@
-import { Group, Stack, Image, Button, Divider, Text, UnstyledButton, ActionIcon } from "@mantine/core";
+import { Group, Stack, Button, Divider, Text, Stepper, TextInput, PasswordInput, Select } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import React, { useState } from "react";
-import DataInputs from "./DataInputs";
-import ImageInput from "./ImageInput";
-import { FaFacebook, FaGithub } from "react-icons/fa";
-import { FcGoogle } from "react-icons/fc";
-import { validateArgCount } from "@firebase/util";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { staticLinkPaths } from "../../data/staticPaths";
+import { useCounter } from "@mantine/hooks";
+import RegisterDataInput from "./RegisterDataInput";
+import RegisterChild from "./RegisterChild";
+import RegisterSummary from "./RegisterSummary";
+import { IconBallon, IconCards, IconFaceId, IconLock } from "@tabler/icons";
+import { CreateAccountAndPushToDB } from "@/Helper/firebaseHelper";
+import { NewLoadingNotificationCallbacks } from "@/Helper/notifications/loadingNotification";
 
 
 function RegisterPage(props: RegisterPageProps) {
-    const [open, setOpen] = useState(false);
-
+    const [step, setStep] = useCounter(2, { min: 0, max: 4 });
+    const navigate = useNavigate();
 
     const form = useForm<RegisterFormType>({
         initialValues: {
-            email: "",
             password: "",
             repeatPassword: "",
-
+            email: "",
+            CCCDName: "",
+            genderCCCD: "Male",
             phoneNumber: "",
+            idCCCD: "",
 
-            fullName: "",
+            // May or may not 
+            parentOf: [{ name: "", class: "" }],
+
             refImage: "",
+            refMatcher: "",
         },
         validate: {
             password: (v, f) => (v && v === f.repeatPassword) ? undefined : "Miss Match",
             repeatPassword: (v, f) => (v && v === f.password) ? undefined : "Miss Match",
 
-            refImage: (v) => v ? undefined : "NEED AN IMAGE",
-
             email: v => v ? undefined : "Need Email",
-            phoneNumber: v => v ? undefined : "Need Phone Number",
-            fullName: v => v ? undefined : "Need Name",
+            phoneNumber: v => (v.length <= 12 && v.length >= 10) ? undefined : "Need Correct Phone Number",
+            CCCDName: v => v ? undefined : "Need Name",
+            idCCCD: v => (10 <= v.length && v.length <= 12) ? undefined : "Should only have 10-12 char",
 
+            // refImage: v => v ? undefined : "Need Image",
+            // refMatcher: v => v ? undefined : "Need Matcher",
 
+            parentOf: value => {
+                for (let i = 0; i < value.length; i++) {
+                    const item = value[i];
+
+                    if (!item.name) {
+                        return "Student must has name"
+                    }
+                    else if (!item.class) {
+                        return "Student must have a class"
+                    }
+
+                }
+                console.log("Didnt ran")
+                return null
+            }
         },
-
-
-
     });
 
-    const onSubmit = (data: RegisterFormType) => {
-        const result = form.validate();
 
-        if (result.hasErrors) {
-            console.log(result.errors);
+    const onStepChange = (decrement: boolean) => {
+        if (decrement) {
+            setStep.decrement();
+            return
+        }
+        // Verify shits
+
+        let isValid = false;
+        const validateField = form.validateField
+
+        console.log(step)
+        switch (step) {
+            case 0:
+                {
+                    const validDatas: boolean[] = [
+                        validateField("email").hasError,
+                        validateField("password").hasError,
+                        validateField("repeatPassword").hasError
+                    ]
+                    isValid = !validDatas.some(b => b);
+                }
+
+                break;
+            case 1:
+                {
+                    const validDatas: boolean[] = [
+                        validateField("CCCDName").hasError,
+                        validateField("genderCCCD").hasError,
+                        validateField("phoneNumber").hasError,
+                        validateField("idCCCD").hasError
+                    ]
+                    isValid = !validDatas.some(b => b);
+                }
+                break;
+            case 2:
+                {
+                    const result = validateField("parentOf")
+                    if (result.hasError) {
+                        alert(result.error!.toString())
+                    }
+
+                    isValid = !result.hasError;
+
+                }
+                break;
+
+            default:
+                console.log("Gone to default")
+                isValid = true;
+                break;
+        }
+
+        if (isValid) {
+            console.log(isValid)
+            setStep.increment();
+        }
+    }
+
+    const onSubmit = async (data: RegisterFormType) => {
+        const formResult = form.validate();
+
+        if (formResult.hasErrors) {
+            alert(formResult.errors);
 
             return;
         }
 
-        console.log(data)
+        const userDB: UserData = {
+            email: data.email,
+            CCCDName: data.CCCDName,
+            genderCCCD: data.genderCCCD,
+            phoneNumber: data.phoneNumber,
+            idCCCD: data.idCCCD,
+            parentOf: data.parentOf,
+            refImage: data.refImage,
+            refMatcher: data.refMatcher,
+
+            createdDate: new Date(),
+            isAdmin: false,
+        };
+
+        await NewLoadingNotificationCallbacks({
+            titleStart: "Registering...",
+            messageStart: "We are making some database real estate for u",
+
+            titleEnd: "Register success!",
+            messageEnd: "Your account now live in a new home",
+
+            errorTitle: "Oops",
+            errorMessage: "Seems like there's something wrong, try again later",
+            callBack: async () => {
+                await CreateAccountAndPushToDB(data.email, data.password, userDB);
+            },
+            onFinish: () => {
+                navigate(staticLinkPaths.home, { replace: true })
+            }
+        })
+
     }
 
 
     return <>
-        <h1>Register</h1>
-        <form>
-            <Stack>
-                <DataInputs form={form} />
-                <ImageInput form={form} opened={open} setOpened={setOpen} />
+        <Group position="apart" align={"center"}>
+            <h1>Register</h1>
+            <Group>
+                <Link to={staticLinkPaths.home}>
+                    <Button color={"red"} variant={"outline"}>Cancle</Button>
+                </Link>
+            </Group>
+        </Group>
+        <Divider my={"md"} />
+        <form onSubmit={form.onSubmit(onSubmit)}>
 
-                <Divider size={"md"} />
-                <Group grow>
-                    <Group position="left">
+            <Stepper active={step} onStepClick={v => setStep.set(v)} breakpoint="sm" size="lg">
+                <Stepper.Step label="Email - Password" description="New account need some email and password" allowStepSelect={step > 0} icon={<IconLock />}>
+                    <RegisterDataInput title="Email-Password">
                         <Stack>
-                            <Text weight={700}>Reference Image</Text>
-                            <Button onClick={() => setOpen(prev => !prev)} variant="outline">Capture Image</Button>
+                            <TextInput type="email" label="Email" {...form.getInputProps("email")} />
+                            <PasswordInput
+                                label="Password"  {...form.getInputProps("password")} />
+                            <PasswordInput
+                                label="Repeat Password" {...form.getInputProps("repeatPassword")} />
                         </Stack>
-                        <Image src={form.values.refImage ?? undefined} width={"60%"} />
-                    </Group>
-                    <Group position="center" grow>
-                        <Stack>
-                            <Text align="center" weight={700}>Or Quick register with</Text>
-                            <Group position="center">
-                                <ActionIcon size={"lg"}>
-                                    <FcGoogle color="red" size={"100%"} />
-                                </ActionIcon>
+                    </RegisterDataInput>
+                </Stepper.Step>
+                <Stepper.Step label="ID Input" description="Input your ID card information" allowStepSelect={step > 1} icon={<IconCards />} >
+                    <RegisterDataInput title="CCCD ID">
+                        <Group grow>
+                            <TextInput label="Full Name" {...form.getInputProps("CCCDName")} />
+                            <Select label="Gender" data={["Male", "Female"]} {...form.getInputProps("genderCCCD")} dropdownPosition="bottom" allowDeselect={false} />
+                        </Group>
+                        <TextInput label="Phone Number" type={"tel"} {...form.getInputProps("phoneNumber")} />
+                        <TextInput label="CCCD/CMND" {...form.getInputProps("idCCCD")} />
+                    </RegisterDataInput>
+                </Stepper.Step>
 
-                                <ActionIcon size={"lg"}>
-                                    <FaGithub size={"100%"} color="black" />
-                                </ActionIcon>
+                <Stepper.Step label="Children" description="Input your children data" allowStepSelect={step > 2} icon={<IconBallon />}>
+                    <RegisterDataInput title="Children">
+                        <RegisterChild form={form} />
+                    </RegisterDataInput>
+                </Stepper.Step>
 
-                                <ActionIcon size={"lg"}>
-                                    <FaFacebook color="blue" size={"100%"} />
-                                </ActionIcon>
-                            </Group>
-                        </Stack>
-                    </Group>
+                <Stepper.Step label={"Face Verification"} description={"Let's capture an image of your face"} allowStepSelect={step > 3} icon={<IconFaceId />} >
+                    <h1>Verified lol</h1>
+                </Stepper.Step>
+                <Stepper.Completed>
+                    <Stack>
+                        <Text weight={"bold"} size={"xl"}>Summary</Text>
+                        <RegisterSummary data={form.values} />
+                        <Button onClick={() => onSubmit(form.values)}>Submit</Button>
+                    </Stack>
+                </Stepper.Completed>
+            </Stepper>
 
-                </Group>
-                <Group position="apart">
-                    <Group>
-                        <Button type="button" onClick={() => onSubmit(form.values)}>Register!</Button>
-                        <Link to={staticLinkPaths.home}>
-                            <Button type="button" onClick={() => console.log(form.values)} color="red" variant="subtle">Cancel</Button>
-
-                        </Link>
-                    </Group>
-                </Group>
-
-            </Stack>
+            <Divider my={"md"} />
+            <Group position="right" mt={"md"}>
+                <Button onClick={() => onStepChange(true)}>Back</Button>
+                <Button onClick={() => onStepChange(false)}>Next</Button>
+            </Group>
         </form>
 
     </>;
@@ -112,13 +231,7 @@ interface RegisterPageProps {
 }
 
 export type RegisterFormType = {
-    email: string,
-    password: string,
-    repeatPassword: string,
-
-    phoneNumber: string,
-
-    fullName: string,
-    refImage: string,
-}
+    password: string
+    repeatPassword: string
+} & RawUserData
 export default RegisterPage;
