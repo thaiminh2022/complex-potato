@@ -18,10 +18,10 @@ function UserNewPerm(props: UserNewPermProps) {
     const [submitActivate, setSubmitActivate] = useState(true);
 
     const navigate = useNavigate();
-
     const { userData, auth } = useUserData()!;
 
     const onSubmit = async (data: RawAskPermissionForm) => {
+        console.log("Called submit")
         setSubmitActivate(false)
 
 
@@ -49,7 +49,7 @@ function UserNewPerm(props: UserNewPermProps) {
                 await WriteDocument("xinphep", formData, permFormConverter);
             },
             onFinish: () => {
-                navigate(staticLinkPaths.home, { replace: true });
+                navigate(staticLinkPaths.xinphep, { replace: true });
             },
             onError: error => {
                 setSubmitActivate(true)
@@ -73,13 +73,15 @@ function UserNewPerm(props: UserNewPermProps) {
             studentIndex: 0,
             reason: "",
             dateData: new Date(),
-            imgStr: userData.refImage
+            imgStr: userData.refImage,
+            imgMatch: 0
         }
 
         return dummy
     }
 
     return <>
+
         <Stack spacing={"sm"}>
             <Group position="apart">
                 <h1>Ask Permission Form</h1>
@@ -91,22 +93,10 @@ function UserNewPerm(props: UserNewPermProps) {
             </Group>
 
             <Divider my={"md"} />
-
-            <Stepper active={active} onStepClick={setActive} breakpoint="sm" size="lg">
-                <Stepper.Step label="Input Data" description="Input data">
-                    <AskPermissionForm onSubmit={onSubmit} formID={"new-form"} startValue={startValue()} />
-                </Stepper.Step>
-                <Stepper.Step label="Verify identity" description="Capture an image to verify">
-                    <UserSimilar match={.3} />
-                </Stepper.Step>
-                <Stepper.Completed>
-                    <Stack>
-                        <Text>Thank You For Submit</Text>
-                        <Button type="submit" form="new-form" fullWidth hidden={!submitActivate}>Submit</Button>
-
-                    </Stack>
-                </Stepper.Completed>
-            </Stepper>
+            <AskPermissionForm startValue={startValue()} onSubmit={onSubmit} formId={"new-form"} />
+            <Stack>
+                <Button type="submit" form="new-form" fullWidth hidden={!submitActivate}>Submit</Button>
+            </Stack>
             <Group position="right">
                 <Button variant="outline" onClick={() => setActive(prev => prev <= 0 ? prev : prev - 1)}>Back</Button>
                 <Button variant="outline" onClick={() => setActive(prev => prev >= 2 ? prev : prev + 1)}>Next</Button>

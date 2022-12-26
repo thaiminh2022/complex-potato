@@ -1,5 +1,5 @@
 import { Group, Stack, Button, Divider, Text, Stepper, TextInput, PasswordInput, Select } from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { useForm, zodResolver } from "@mantine/form";
 import { Link, useNavigate } from "react-router-dom";
 import { staticLinkPaths } from "../../data/staticPaths";
 import { useCounter } from "@mantine/hooks";
@@ -9,12 +9,15 @@ import RegisterSummary from "./RegisterSummary";
 import { IconBallon, IconCards, IconFaceId, IconLock } from "@tabler/icons";
 import { CreateAccountAndPushToDB } from "@/Helper/firebaseHelper";
 import { NewLoadingNotificationCallbacks } from "@/Helper/notifications/loadingNotification";
+import { registerFormSchema } from "@/data/schemas";
+import { useState } from "react";
+import { useErrorState } from "@/Helper/hooks/useErrorState";
 
 
-function RegisterPage(props: RegisterPageProps) {
-    const [step, setStep] = useCounter(2, { min: 0, max: 4 });
+
+function RegisterPage() {
+    const [step, setStep] = useCounter(0, { min: 0, max: 4 });
     const navigate = useNavigate();
-
     const form = useForm<RegisterFormType>({
         initialValues: {
             password: "",
@@ -31,35 +34,13 @@ function RegisterPage(props: RegisterPageProps) {
             refImage: "",
             refMatcher: "",
         },
-        validate: {
-            password: (v, f) => (v && v === f.repeatPassword) ? undefined : "Miss Match",
-            repeatPassword: (v, f) => (v && v === f.password) ? undefined : "Miss Match",
-
-            email: v => v ? undefined : "Need Email",
-            phoneNumber: v => (v.length <= 12 && v.length >= 10) ? undefined : "Need Correct Phone Number",
-            CCCDName: v => v ? undefined : "Need Name",
-            idCCCD: v => (10 <= v.length && v.length <= 12) ? undefined : "Should only have 10-12 char",
-
-            // refImage: v => v ? undefined : "Need Image",
-            // refMatcher: v => v ? undefined : "Need Matcher",
-
-            parentOf: value => {
-                for (let i = 0; i < value.length; i++) {
-                    const item = value[i];
-
-                    if (!item.name) {
-                        return "Student must has name"
-                    }
-                    else if (!item.class) {
-                        return "Student must have a class"
-                    }
-
-                }
-                console.log("Didnt ran")
-                return null
-            }
-        },
+        validate: zodResolver(registerFormSchema),
     });
+
+    const passwordError = useErrorState("PASSWORD MUST MATCH", () => {
+        const passwordMatch = form.values.password == form.values.repeatPassword;
+        return passwordMatch
+    }, [form.values.password, form.values.repeatPassword])
 
 
     const onStepChange = (decrement: boolean) => {
@@ -69,7 +50,7 @@ function RegisterPage(props: RegisterPageProps) {
         }
         // Verify shits
 
-        let isValid = false;
+        let isValid = false
         const validateField = form.validateField
 
         console.log(step)
@@ -181,9 +162,11 @@ function RegisterPage(props: RegisterPageProps) {
                         <Stack>
                             <TextInput type="email" label="Email" {...form.getInputProps("email")} />
                             <PasswordInput
-                                label="Password"  {...form.getInputProps("password")} />
+                                label="Password"  {...form.getInputProps("password")}
+                                error={passwordError ?? form.getInputProps("password").error} />
                             <PasswordInput
-                                label="Repeat Password" {...form.getInputProps("repeatPassword")} />
+                                label="Repeat Password" {...form.getInputProps("repeatPassword")}
+                                error={passwordError ?? form.getInputProps("password").error} />
                         </Stack>
                     </RegisterDataInput>
                 </Stepper.Step>
@@ -226,9 +209,6 @@ function RegisterPage(props: RegisterPageProps) {
     </>;
 }
 
-interface RegisterPageProps {
-
-}
 
 export type RegisterFormType = {
     password: string

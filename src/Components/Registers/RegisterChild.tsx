@@ -22,8 +22,6 @@ function RegisterChild({ form }: RegisterChildProps) {
 
         // Delete latest value
         form.removeListItem("parentOf", form.values.parentOf.length - 1)
-
-
     }
     const students = (item: Student, index: number) => {
         return (
@@ -47,10 +45,10 @@ function RegisterChild({ form }: RegisterChildProps) {
             </ScrollArea>
             <Divider my={"md"} />
             <Group position="right">
-                <ActionIcon variant="outline" color={"red"} onClick={() => deleteChild()}>
+                <ActionIcon variant="outline" color="red" onClick={() => deleteChild()}>
                     <IconMinus color="red" />
                 </ActionIcon>
-                <ActionIcon variant="outline" color={"blue"} onClick={insertChild}>
+                <ActionIcon variant="outline" color="blue" onClick={insertChild}>
                     <IconPlus color="blue" />
                 </ActionIcon>
             </Group>

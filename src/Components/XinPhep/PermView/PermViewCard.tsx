@@ -4,7 +4,7 @@ import { IconArrowIteration, IconEye, IconLoader, IconLoader2, IconLoader3, Icon
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 
-function UserViewPermCard({ data }: UserViewPermCardProps) {
+function PermViewCard({ data, to }: ViewPermCardProps) {
     const badgeData = useMemo(() => {
         const iconSize = 16;
 
@@ -41,7 +41,7 @@ function UserViewPermCard({ data }: UserViewPermCardProps) {
                 </Stack>
                 <Stack>
                     <Badge variant="dot" size="lg">{data.dateData.toLocaleDateString("vi-VN")}</Badge>
-                    <Link to={`${staticLinkPaths.xinphep}/${data.id ?? ""}`}>
+                    <Link to={to}>
                         <Button variant="outline" leftIcon={<IconEye />}>View</Button>
                     </Link>
                 </Stack>
@@ -50,7 +50,8 @@ function UserViewPermCard({ data }: UserViewPermCardProps) {
     );
 }
 
-interface UserViewPermCardProps {
+interface ViewPermCardProps {
     data: AskPermissionForm
+    to: string,
 }
-export default UserViewPermCard;
+export default PermViewCard;

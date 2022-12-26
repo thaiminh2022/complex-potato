@@ -8,45 +8,18 @@ import { useForm } from "@mantine/form";
 
 import { where } from "firebase/firestore";
 import { useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { v4 } from "uuid";
-import UserViewPermCard from "./UserViewPermCard";
+import { Link } from "react-router-dom";
+import { useUserData } from "@/Helper/hooks/useUserData";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "@/fb";
+import ViewPerms from "../PermView/ViewPerms";
 
 
 function UserViewPerms(props: UserViewPermsProps) {
-    const [values] = useDocsQuery("xinphep", permFormConverter, where("uid", "==", "hello"));
-
-    const filterForm = useForm<FilterForm>({
-        initialValues: {
-            date: undefined,
-            status: undefined
-        }
-    })
-
-    const filterValue = useMemo(() => {
-        const dateFilter = filterForm.values.date?.toLocaleDateString();
-        const statusFilter = filterForm.values.status;
-
-        return values?.filter(v => {
-            const dateData = v.dateData.toLocaleDateString();
-            const status = v.verified;
-
-            const matchDate = dateData == (dateFilter ?? dateData);
-            const matchStatus = status == (statusFilter ?? status);
+    const [user] = useAuthState(auth);
+    const [values] = useDocsQuery<AskPermissionForm>("xinphep", permFormConverter, where("uid", "==", user?.uid ?? "hello"));
 
 
-            return matchDate && matchStatus;
-        })
-
-
-    }, [values, filterForm.values])
-
-    const userDataCard = (data: AskPermissionForm, index: number) => {
-
-        return <>
-            <UserViewPermCard data={data} />
-        </>
-    }
 
     return (
         <>
@@ -65,18 +38,7 @@ function UserViewPerms(props: UserViewPermsProps) {
             </Group>
             <Divider my={"sm"} />
 
-            <Group position="right" mb={"sm"}>
-                <DatePicker label="Filter by Date" {...filterForm.getInputProps("date")} />
-                <Select
-                    label="Filter by status"
-                    {...filterForm.getInputProps("status")}
-                    data={["Accepted", "Rejected", "Pending"]}
-                />
-
-            </Group>
-            <Stack>
-                {filterValue && filterValue.map(userDataCard)}
-            </Stack>
+            <ViewPerms values={values ?? []} to={`${staticLinkPaths.xinphep}`} />
         </>
     );
 }
@@ -85,8 +47,5 @@ interface UserViewPermsProps {
 
 }
 
-type FilterForm = {
-    date?: Date
-    status?: FormStatus
-}
+
 export default UserViewPerms;

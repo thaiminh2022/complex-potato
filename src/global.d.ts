@@ -1,59 +1,48 @@
+import { z } from "zod"
+import { permFormSchema, rawPermFormSchema, userSchema, rawUserSchema, studentSchema, statusEnum } from "./data/schemas"
+import { MantineColor } from "@mantine/core"
+
 export { }
+
+
 
 declare global {
 
-    type Gender = "Male" | "Female"
-    type FormStatus = "Accepted" | "Rejected" | "Pending"
-    type Student = {
-        name: string,
-        class: string
-    }
-
     // Permission form
-    type AskPermissionForm = {
-        id?: string,
-        uid: string
-
-        submitDate: Date,
-        verified: FormStatus
-        verifiedReasons: string,
-
-    } & RawAskPermissionForm
-
-    type RawAskPermissionForm = {
-        parentName: string,
-        parentPhoneNumber: string,
-        studentName: string,
-        grade: string,
-
-        studentIndex: number,
-
-        reason: string,
-        dateData: Date,
-
-        imgStr: string,
-    }
+    type AskPermissionForm = z.infer<typeof permFormSchema>
+    type RawAskPermissionForm = z.infer<typeof rawPermFormSchema>
 
     // Register Form
-    type UserData = {
-        id?: string
+    type UserData = z.infer<typeof userSchema>
+    type RawUserData = z.infer<typeof rawUserSchema>
 
-        createdDate: Date
-        isAdmin: boolean
-    } & RawUserData
-    type RawUserData = {
-        // CCCD data
-        email: string,
-        CCCDName: string,
-        genderCCCD: Gender
-        phoneNumber: string,
-        idCCCD: string
+    type Student = z.infer<typeof studentSchema>
+    type FormStatus = z.infer<typeof statusEnum>
 
-        // May or may not 
-        parentOf: Student[]
+    type LinkProps = {
+        label: string,
+        value: string,
+        desc?: string,
+        icon?: React.ReactNode
+        color?: MantineColor
+    }
 
-        refImage: string
-        refMatcher: string
+    export type MemeType = {
+        count: number;
+        memes: Meme[];
+    }
+
+    export type Meme = {
+        postLink: string;
+        subreddit: string;
+        title: string;
+        url: string;
+        nsfw: boolean;
+        spoiler: boolean;
+        author: string;
+        ups: number;
+        preview: string[];
     }
 
 }
+

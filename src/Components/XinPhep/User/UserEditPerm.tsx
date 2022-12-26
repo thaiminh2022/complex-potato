@@ -8,10 +8,15 @@ import React, { useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import AskPermissionForm from "../AskPermissionForm";
+import { NewLoadingNotificationCallbacks } from "@/Helper/notifications/loadingNotification";
 
 
 function UserEditPerm(props: UserEditPermProps) {
     const { id } = useParams();
+    if (!id) {
+        return <h1>cant find id lol</h1>
+    }
+
     const [val] = useDoc<AskPermissionForm>("xinphep", permFormConverter, id!);
 
     const badgeData = useMemo(() => {
@@ -36,16 +41,26 @@ function UserEditPerm(props: UserEditPermProps) {
     const readonly = val?.verified != "Pending";
 
     const onSubmit = async (v: RawAskPermissionForm) => {
-        // const data: AskPermissionForm = {
-        //     ...val,
-        //     ...v
-        // }
 
-        // await EditDocument("xinphep", id, data, permFormConverter).catch(x => {
-        //     console.log("has bad error" + x);
+        NewLoadingNotificationCallbacks({
+            titleStart: "Editing...",
+            messageStart: "FINDING THAT DAMN DOCUMENT",
 
-        // });
-        // console.log("Edited");
+            titleEnd: "Edited",
+            messageEnd: "Alright we good",
+
+            callBack: async () => {
+                const finalData: AskPermissionForm = {
+                    ...v,
+                    uid: "",
+                    submitDate: new Date(),
+                    verified: "Accepted",
+                    verifiedReasons: ""
+                }
+
+                await EditDocument("xinphep", id, finalData, permFormConverter);
+            }
+        })
     }
 
     return (

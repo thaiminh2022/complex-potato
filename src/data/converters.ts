@@ -11,7 +11,7 @@ export const permFormConverter: FirestoreDataConverter<AskPermissionForm> = {
 
             submitDate: Timestamp.fromDate(data.submitDate),
             verified: data.verified,
-            verifiedReasons: data.verifiedReasons
+            verifiedReasons: data.verifiedReasons,
         };
     },
     fromFirestore(

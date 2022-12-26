@@ -2,9 +2,10 @@ import { NewLoadingNotificationCallbacks } from "@/Helper/notifications/loadingN
 import { staticLinkPaths } from "@/data/staticPaths";
 import { LoginAccount } from "@/Helper/firebaseHelper";
 import { Button, Card, Container, Divider, Group, Stack, TextInput, Text, PasswordInput } from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { useForm, zodResolver } from "@mantine/form";
 import { IconLock, IconLogin, IconUser } from "@tabler/icons";
 import { Link, useNavigate } from "react-router-dom";
+import { loginFormSchema } from "@/data/schemas";
 
 function LoginPage() {
     const navigate = useNavigate();
@@ -13,10 +14,7 @@ function LoginPage() {
             email: "",
             password: ""
         },
-        validate: {
-            email: v => v ? undefined : "MUST INPUT AN EMAIL",
-            password: v => v ? undefined : "MUST INPUT AN PASSWORD"
-        }
+        validate: zodResolver(loginFormSchema)
     })
 
     const onSubmit = async (data: LoginPageFormType) => {
@@ -53,7 +51,7 @@ function LoginPage() {
         <Group position="apart">
             <h1>Login</h1>
             <Link to={staticLinkPaths.home}>
-                <Button color={"red"} variant="subtle" type="button">Cancel</Button>
+                <Button color={"red"} variant="outline" type="button">Cancel</Button>
             </Link>
         </Group>
         <Divider my={"lg"} />

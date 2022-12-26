@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, DocumentData, setDoc, WithFieldValue, query, FirestoreDataConverter } from "firebase/firestore";
+import { addDoc, collection, doc, DocumentData, setDoc, WithFieldValue, query, FirestoreDataConverter, QueryConstraint } from "firebase/firestore";
 import { auth, db } from "../fb";
 import { useCollectionData, useDocumentData } from "react-firebase-hooks/firestore";
 import { userDataConverter } from "@/data/converters";
@@ -20,8 +20,8 @@ export function useDoc<T>(collectionName: CollectionType, converter: FirestoreDa
     return useDocumentData<T>(doc(db, collectionName, id).withConverter(converter))
 }
 // Query should be condition only
-export function useDocsQuery<T>(collectionName: CollectionType, converter: FirestoreDataConverter<T>, queryCondition: any) {
-    const q = query(collection(db, collectionName).withConverter(converter), queryCondition)
+export function useDocsQuery<T>(collectionName: CollectionType, converter: FirestoreDataConverter<T>, ...queryCondition: QueryConstraint[]) {
+    const q = query(collection(db, collectionName).withConverter(converter), ...queryCondition)
     return useCollectionData<T>(q);
 }
 export async function LoginAccount(email: string, password: string) {
