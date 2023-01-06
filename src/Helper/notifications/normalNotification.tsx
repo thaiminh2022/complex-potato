@@ -1,5 +1,8 @@
 import { showNotification } from "@mantine/notifications";
-import { NotificationProps } from "./NotificationProps";
+import {
+    NotificationGoodBadProps,
+    NotificationProps,
+} from "./NotificationProps";
 import { IconNotification } from "@tabler/icons";
 
 export function NewNotification(data: NotificationProps) {
@@ -11,11 +14,13 @@ export function NewNotification(data: NotificationProps) {
 
         onOpen: data.onOpen,
         onClose: data.onClose,
-
-    })
+    });
 }
 
-export function NewNotificationWithGoodBad(data: NotificationProps, isBad: boolean = false) {
+export function NewNotificationWithGoodBad(
+    data: NotificationGoodBadProps,
+    isBad: boolean = false
+) {
     showNotification({
         title: data.title,
         message: data.message,
@@ -24,6 +29,5 @@ export function NewNotificationWithGoodBad(data: NotificationProps, isBad: boole
 
         onOpen: data.onOpen,
         onClose: data.onClose,
-
-    })
+    });
 }

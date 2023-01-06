@@ -32,6 +32,11 @@ function AskPermissionForm(props: AskPermissionFormProps) {
     })
 
 
+    useEffect(() => {
+        if (val)
+            form.setValues(val);
+    }, [val])
+
     return (
         <form onSubmit={form.onSubmit(props.onSubmit ?? (() => { }))} id={props.formId}>
             <PermissionFormInputs form={form} readonly={readonly} />

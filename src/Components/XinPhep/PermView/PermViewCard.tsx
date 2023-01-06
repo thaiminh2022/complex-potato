@@ -1,5 +1,5 @@
 import { staticLinkPaths } from "@/data/staticPaths";
-import { Badge, Button, Card, Group, Stack, Text } from "@mantine/core";
+import { Badge, Button, Card, Divider, Group, Modal, Stack, Text } from "@mantine/core";
 import { IconArrowIteration, IconEye, IconLoader, IconLoader2, IconLoader3, IconThumbDown, IconThumbUp } from "@tabler/icons";
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
@@ -36,8 +36,8 @@ function PermViewCard({ data, to }: ViewPermCardProps) {
                             {data.verified}
                         </Badge>
                     </Group>
-                    <Text lineClamp={3}>{data.reason}</Text>
-
+                   <Text lineClamp={3}>{data.reason}</Text>
+                  
                 </Stack>
                 <Stack>
                     <Badge variant="dot" size="lg">{data.dateData.toLocaleDateString("vi-VN")}</Badge>

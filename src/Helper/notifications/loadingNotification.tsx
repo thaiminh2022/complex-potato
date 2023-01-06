@@ -19,12 +19,12 @@ export function NewLoadNotification(data: NotificationProps) {
 export function StopLoadNotification(data: NotificationProps, isBad: boolean = false) {
     updateNotification({
         id: data.id,
-        disallowClose: true,
+        disallowClose: false,
         title: data.title,
         message: data.message,
         loading: false,
         color: isBad ? "red" : "green",
-        
+
 
         onOpen: data.onOpen,
         onClose: data.onClose,
@@ -35,7 +35,7 @@ export function StopLoadNotification(data: NotificationProps, isBad: boolean = f
 }
 
 export async function NewLoadingNotificationCallbacks(data: NotificationCallbacks) {
-    const id = v4();
+    const id = `thaiminh2022-${v4()}`;
     NewLoadNotification({ title: data.titleStart, message: data.messageStart, id: id })
     try {
         await data.callBack()

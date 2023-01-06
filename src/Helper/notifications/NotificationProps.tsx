@@ -5,19 +5,24 @@ export type NotificationProps = {
     onClose?: () => void;
     onOpen?: () => void;
 };
+export type NotificationGoodBadProps = {
+    title: string;
+    message: string;
+    onClose?: () => void;
+    onOpen?: () => void;
+};
 
 export type NotificationCallbacks = {
-    titleStart: string
-    titleEnd: string
+    titleStart: string;
+    titleEnd: string;
 
-    messageStart: string
-    messageEnd: string
+    messageStart: string;
+    messageEnd: string;
 
-    callBack: () => void | Promise<void>,
-    onFinish?: () => void | Promise<void>,
-    onError?: (error: any) => void | Promise<void>
+    callBack: () => void | Promise<void>;
+    onFinish?: () => void | Promise<void>;
+    onError?: (error: any) => void | Promise<void>;
 
-    errorMessage?: string
-    errorTitle?: string
-
-}
+    errorMessage?: string;
+    errorTitle?: string;
+};

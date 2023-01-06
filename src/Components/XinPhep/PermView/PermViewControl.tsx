@@ -28,12 +28,23 @@ function PermViewControl({ verified, ...data }: PermViewControlProps) {
         <>
             <Group position="apart">
                 <Group>
-                    <Text>{`${data.parentName} -> ${data.studentName}`}</Text>
+                    <Stack spacing={"xs"}>
+                        <Group spacing={"xs"}>
+                            <Text weight="bold">{"From:"}</Text>
+                            <Text>{`${data.parentName}`}</Text>
+                        </Group>
+                        <Group>
+                            <Text weight="bold">{"For:"}</Text>
+                            <Text>{`${data.studentName}`}</Text>
+                        </Group>
+                    </Stack>
+
                     <Badge color={badgeData.color} leftSection={badgeData.icon} size={"lg"}>
                         {verified}
                     </Badge>
                 </Group>
                 <Group>
+
 
                     <Badge variant="dot" size="lg">{data.dateData.toLocaleDateString()}</Badge>
                     <Link to={data.to}>

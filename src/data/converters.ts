@@ -1,10 +1,16 @@
-import { DocumentData, FirestoreDataConverter, QueryDocumentSnapshot, snapshotEqual, SnapshotOptions, Timestamp, WithFieldValue } from "firebase/firestore"
+import {
+    DocumentData,
+    FirestoreDataConverter,
+    QueryDocumentSnapshot,
+    snapshotEqual,
+    SnapshotOptions,
+    Timestamp,
+    WithFieldValue,
+} from "firebase/firestore";
 
 export const permFormConverter: FirestoreDataConverter<AskPermissionForm> = {
-
-
     toFirestore(data: AskPermissionForm): DocumentData {
-        const raw: RawAskPermissionForm = { ...data }
+        const raw: RawAskPermissionForm = { ...data };
 
         return {
             ...raw,
@@ -18,27 +24,28 @@ export const permFormConverter: FirestoreDataConverter<AskPermissionForm> = {
         snapshot: QueryDocumentSnapshot,
         options: SnapshotOptions
     ): AskPermissionForm {
-        const data = snapshot.data() as { dateData: Timestamp } & AskPermissionForm;
+        const data = snapshot.data() as {
+            dateData: Timestamp;
+            submitDate: Timestamp;
+        } & AskPermissionForm;
 
         return {
             ...data,
             id: snapshot.id,
             dateData: data.dateData.toDate(),
-        }
-    }
+            submitDate: data.submitDate.toDate(),
+        };
+    },
 };
-
 
 export const userDataConverter: FirestoreDataConverter<UserData> = {
     toFirestore(data: UserData): DocumentData {
-        const raw: RawUserData = { ...data }
-
+        const raw: RawUserData = { ...data };
 
         return {
             ...raw,
             createdDate: Timestamp.fromDate(data.createdDate),
-            isAdmin: data.isAdmin
-
+            isAdmin: data.isAdmin,
         };
     },
     fromFirestore(
@@ -50,7 +57,7 @@ export const userDataConverter: FirestoreDataConverter<UserData> = {
         return {
             ...data,
             id: snapshot.id,
-            createdDate: data.createdDate.toDate()
-        }
-    }
+            createdDate: data.createdDate.toDate(),
+        };
+    },
 };

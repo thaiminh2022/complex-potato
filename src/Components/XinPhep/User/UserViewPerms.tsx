@@ -5,7 +5,6 @@ import { Button, Divider, Stack, Group, Select } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 
-
 import { where } from "firebase/firestore";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
@@ -14,17 +13,17 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/fb";
 import ViewPerms from "../PermView/ViewPerms";
 
-
 function UserViewPerms(props: UserViewPermsProps) {
     const [user] = useAuthState(auth);
-    const [values] = useDocsQuery<AskPermissionForm>("xinphep", permFormConverter, where("uid", "==", user?.uid ?? "hello"));
-
-
+    const [values] = useDocsQuery<AskPermissionForm>(
+        "xinphep",
+        permFormConverter,
+        where("uid", "==", user?.uid ?? "hello")
+    );
 
     return (
         <>
             <Group position="apart" align={"center"}>
-
                 <h1>View</h1>
 
                 <Group>
@@ -38,14 +37,14 @@ function UserViewPerms(props: UserViewPermsProps) {
             </Group>
             <Divider my={"sm"} />
 
-            <ViewPerms values={values ?? []} to={`${staticLinkPaths.xinphep}`} />
+            <ViewPerms
+                values={values ?? []}
+                to={`${staticLinkPaths.xinphep}`}
+            />
         </>
     );
 }
 
-interface UserViewPermsProps {
-
-}
-
+interface UserViewPermsProps {}
 
 export default UserViewPerms;

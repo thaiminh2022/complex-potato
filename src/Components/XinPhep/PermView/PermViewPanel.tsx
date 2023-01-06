@@ -1,15 +1,19 @@
 import React from "react";
-import { Text } from "@mantine/core"
+import { Group, Stack, Text } from "@mantine/core"
 
-function PermViewPanel({ ...data }: PermViewPanelProps) {
-    return (
-        <>
-            <Text size={"md"} weight={"bold"}>Reasons: </Text>
-            <Text>{data.reason}</Text>
-        </>
-    )
+function PermViewPanel({ rightSection, data }: PermViewPanelProps) {
+  return (
+    <Group position="apart">
+      <Stack>
+        <Text size={"md"} weight={"bold"}>Reasons: </Text>
+        <Text>{data.reason}</Text>
+      </Stack>
+      {rightSection && rightSection(data)}
+    </Group>
+  )
 }
 interface PermViewPanelProps {
-    reason: string,
+  rightSection?: (data: AskPermissionForm) => React.ReactNode | React.ReactNode[],
+  data: AskPermissionForm,
 }
 export default PermViewPanel;
