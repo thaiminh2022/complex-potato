@@ -1,54 +1,49 @@
 import Webcam, { ChildrenProps } from "react-webcam";
-import React, { useCallback, useRef } from "react"
+import React, { useCallback, useRef } from "react";
 import { Group, Stack } from "@mantine/core";
 
 const defaultVideoConstraints = {
-    width: 300,
-    height: 300,
+    width: 1280,
+    height: 720,
     facingMode: "user",
-    mirrored: true,
+    mirrored: false,
     imageSmoothing: true,
 };
 
-
 function WebcamComponent(props: WebcamComponentProps) {
-
-    const webcamRef = useRef<Webcam | null>(null);
+    const { width, height, videoConstrains, capture, webcamRef } = props;
 
     return (
-        <Stack>
+        <>
             <Webcam
-                hidden={props.hidden}
                 audio={false}
-                height={props.height ?? 300}
+                height={height}
                 ref={webcamRef}
+                width={width}
                 screenshotFormat="image/webp"
-                width={props.width ?? 300}
-                videoConstraints={props.videoConstrains ?? defaultVideoConstraints}
-                mirrored={true}
+                videoConstraints={videoConstrains ?? defaultVideoConstraints}
+                mirrored={false}
                 imageSmoothing
             >
                 {/* @ts-ignore */}
                 {({ getScreenshot }) => {
-                    return props.capture(getScreenshot);
+                    if (props.capture) {
+                        return props.capture(getScreenshot);
+                    }
                 }}
-
             </Webcam>
-
-        </Stack >
+        </>
     );
-};
-
+}
 
 interface WebcamComponentProps {
-    width?: number,
-    height?: number,
+    width?: number | string;
+    height?: number | string;
 
-    videoConstrains?: WebcamComponentVideoConstrainsProps,
+    videoConstrains?: WebcamComponentVideoConstrainsProps;
     // capture: (imageStr: string | null) => JSX.Element
-    capture: (data: () => string | null) => JSX.Element,
-
-    hidden?: boolean
+    capture?: (data: () => string | null) => JSX.Element;
+    webcamRef?: React.MutableRefObject<Webcam | null>;
 }
 
 export type WebcamComponentVideoConstrainsProps = {
@@ -57,6 +52,6 @@ export type WebcamComponentVideoConstrainsProps = {
     facingMode: string;
     mirrored: boolean;
     imageSmoothing: boolean;
+};
 
-}
 export default WebcamComponent;

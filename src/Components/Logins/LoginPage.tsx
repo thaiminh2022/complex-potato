@@ -1,72 +1,81 @@
-import { ActionIcon, Button, Divider, Group, Stack, TextInput } from "@mantine/core";
-import { useForm } from "@mantine/form";
-import React from "react";
-import { FaFacebook, FaGithub } from "react-icons/fa";
-import { FcGoogle } from "react-icons/fc";
-import { Link } from "react-router-dom";
-import { staticLinkPaths } from "../../data/staticPaths";
+import { NewLoadingNotificationCallbacks } from "@/Helper/notifications/loadingNotification";
+import { staticLinkPaths } from "@/data/staticPaths";
+import { LoginAccount } from "@/Helper/firebaseHelper";
+import { Button, Card, Container, Divider, Group, Stack, TextInput, Text, PasswordInput } from "@mantine/core";
+import { useForm, zodResolver } from "@mantine/form";
+import { IconLock, IconLogin, IconUser } from "@tabler/icons";
+import { Link, useNavigate } from "react-router-dom";
+import { loginFormSchema } from "@/data/schemas";
 
-function LoginPage(props: LoginPageProps) {
+function LoginPage() {
+    const navigate = useNavigate();
     const form = useForm<LoginPageFormType>({
         initialValues: {
             email: "",
             password: ""
         },
-        validate: {
-            email: v => v ? undefined : "MUST INPUT AN EMAIL",
-            password: v => v ? undefined : "MUST INPUT AN PASSWORD"
-        }
+        validate: zodResolver(loginFormSchema)
     })
 
-    const onSubmit = (data: LoginPageFormType) => {
-        const result = form.validate();
+    const onSubmit = async (data: LoginPageFormType) => {
+        const formResult = form.validate();
 
-        if (result.hasErrors) {
-            console.log(result.errors)
+        if (formResult.hasErrors) {
+            console.log(formResult.errors)
 
             return;
         }
-        console.log(data);
+
+        NewLoadingNotificationCallbacks({
+            titleStart: "Looking for your land",
+            messageStart: "We're searching for you land at our database",
+
+            titleEnd: "Login success",
+            messageEnd: "Nice land!",
+
+            errorTitle: "Login failed",
+            errorMessage: "Check your account again",
+
+            callBack: async () => {
+                await LoginAccount(data.email, data.password)
+            },
+
+            onFinish: async () => {
+                navigate(staticLinkPaths.home, { replace: true })
+            }
+        })
     }
 
 
     return <>
-        <h1>Login</h1>
-        <form>
-            <Stack>
-                <TextInput type="email" label="Your email" {...form.getInputProps("email")} />
-                <TextInput type="password" label="Your password" {...form.getInputProps("password")} />
-                <Button onClick={() => onSubmit(form.values)} type="button">
-                    Login!
-                </Button>
-                <Link to={staticLinkPaths.home}>
-                    <Button color={"red"} variant="subtle" type="button">Cancel</Button>
-                </Link>
+        <Group position="apart">
+            <h1>Login</h1>
+            <Link to={staticLinkPaths.home}>
+                <Button color={"red"} variant="outline" type="button">Cancel</Button>
+            </Link>
+        </Group>
+        <Divider my={"lg"} />
 
-            </Stack>
-            <Divider />
-            <Group>
-                <ActionIcon size={"lg"}>
-                    <FcGoogle color="red" size={"100%"} />
-                </ActionIcon>
+        <Container size={"xs"} >
+            <Card withBorder shadow={"md"}>
+                <Text weight={"bold"} size={"xl"}>User Data</Text>
+                <form onSubmit={form.onSubmit(onSubmit)}>
+                    <Stack>
+                        <TextInput type="email" label="Your email" {...form.getInputProps("email")} placeholder="example@gmail.com" icon={<IconUser />} />
 
-                <ActionIcon size={"lg"}>
-                    <FaGithub size={"100%"} color="black" />
-                </ActionIcon>
+                        <PasswordInput label="Your password" {...form.getInputProps("password")} placeholder={"69420"} icon={<IconLock />} />
 
-                <ActionIcon size={"lg"}>
-                    <FaFacebook color="blue" size={"100%"} />
-                </ActionIcon>
-            </Group>
+                    </Stack>
+                    <Group position="right" my={"lg"}>
+                        <Button type="submit" leftIcon={<IconLogin />}>Login</Button>
+                    </Group>
+                </form>
+            </Card>
+        </Container>
 
-
-        </form>
     </>;
 }
 
-interface LoginPageProps {
-
-}
 
 type LoginPageFormType = {
     email: string,
