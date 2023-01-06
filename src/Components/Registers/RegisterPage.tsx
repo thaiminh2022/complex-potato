@@ -5,9 +5,6 @@ import {
     Divider,
     Text,
     Stepper,
-    TextInput,
-    PasswordInput,
-    Select,
     LoadingOverlay,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
@@ -20,13 +17,14 @@ import { CreateAccountAndPushToDB } from "@/Helper/firebaseHelper";
 import { NewLoadingNotificationCallbacks } from "@/Helper/notifications/loadingNotification";
 import { registerFormSchema } from "@/data/schemas";
 import { useErrorState } from "@/Helper/hooks/useErrorState";
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 import RegisterChild from "./Inputs/RegisterChild";
 import RegisterDataInput from "./Inputs/RegisterDataInput";
 import RegisterEmailPasswordInput from "./Inputs/RegisterEmailPasswordInput";
 import RegisterFaceVerification from "./Inputs/RegisterFaceVerification";
 import RegisterSummary from "./RegisterSummary";
 import RegisterCCCDInput from "./Inputs/RegisterCCCDInput";
+import { NewNotificationWithGoodBad } from "@/Helper/notifications/normalNotification";
 
 function RegisterPage() {
     const [step, setStep] = useCounter(2, { min: 0, max: 4 });
@@ -59,7 +57,6 @@ function RegisterPage() {
         },
         [form.values.password, form.values.repeatPassword]
     );
-
     const onStepChange = (decrement: boolean) => {
         if (decrement) {
             setStep.decrement();
@@ -111,6 +108,16 @@ function RegisterPage() {
                         validateField("refMatcher").hasError,
                     ];
                     isValid = !validDatas.some((b) => b);
+
+                    if (!isValid) {
+                        NewNotificationWithGoodBad(
+                            {
+                                title: "CANNOT CONTINUE",
+                                message: "Check your face verification",
+                            },
+                            true
+                        );
+                    }
                 }
                 break;
 

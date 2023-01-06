@@ -76,8 +76,8 @@ export const rawUserSchema = z.object({
     // May or may not
     parentOf: z.array(studentSchema),
 
-    refImage: z.string(),
-    refMatcher: z.string(),
+    refImage: z.string().min(1),
+    refMatcher: z.string().min(1),
 });
 
 export const userSchema = z

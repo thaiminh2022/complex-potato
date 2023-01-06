@@ -3,7 +3,7 @@ import {
     NotificationGoodBadProps,
     NotificationProps,
 } from "./NotificationProps";
-import { IconNotification } from "@tabler/icons";
+import { IconCheck, IconNotification, IconX } from "@tabler/icons";
 
 export function NewNotification(data: NotificationProps) {
     showNotification({
@@ -24,7 +24,7 @@ export function NewNotificationWithGoodBad(
     showNotification({
         title: data.title,
         message: data.message,
-        icon: <IconNotification />,
+        icon: isBad ? <IconX /> : <IconCheck />,
         color: isBad ? "red" : "green",
 
         onOpen: data.onOpen,

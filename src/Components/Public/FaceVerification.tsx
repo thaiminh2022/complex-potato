@@ -3,9 +3,10 @@ import { useInterval } from "@mantine/hooks";
 import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import WebcamComponent from "./WebcamComponent";
-import { Button, Group, Loader, Stack, Text } from "@mantine/core";
+import { Button, Divider, Group, Loader, Stack, Text } from "@mantine/core";
 import { FaceMatch, FaceMatcher } from "face-api.js";
 import { NewNotificationWithGoodBad } from "@/Helper/notifications/normalNotification";
+import { IconCheck } from "@tabler/icons";
 
 const dth = new DetectionHelper();
 
@@ -50,8 +51,7 @@ function FaceVerification(props: FaceVerificationProps) {
         }
 
         // Allow capture if status detect some faces
-        const getScreenshot = webcamRef.current.getScreenshot;
-        const screenshot = getScreenshot();
+        const screenshot = webcamRef.current.getScreenshot();
         const faceMatcher = dth.GetMatcher();
 
         if (props.onCapture) {
@@ -74,30 +74,33 @@ function FaceVerification(props: FaceVerificationProps) {
 
     const handleVerifying = async (faceMatcher: FaceMatcher) => {
         const data = dth.CompareToDetections(faceMatcher);
-
         return data.distance;
     };
 
     return (
         <>
-            <Group align={"start"}>
+            <Stack>
                 <WebcamComponent
                     webcamRef={webcamRef}
                     width={props.width}
                     height={props.height}
                 />
-
-                <Stack>
-                    <Text size={"xl"} weight={450}>
-                        Take a picture for verification
-                    </Text>
-                    <Group>
-                        <Text>{statusText}</Text>
-                        {statusText != "Detected" ? <Loader /> : <></>}
-                    </Group>
-
-                    <Button onClick={handleImageCapture}>Capture</Button>
-                </Stack>
+                <Text color={"red"} weight={450}>
+                    {props.error}
+                </Text>
+            </Stack>
+            <Group position="apart">
+                <Button onClick={handleImageCapture} disabled={props.disable}>
+                    Capture
+                </Button>
+                <Group>
+                    {statusText != "Detected" ? (
+                        <Loader />
+                    ) : (
+                        <IconCheck></IconCheck>
+                    )}
+                    <Text>{statusText}</Text>
+                </Group>
             </Group>
         </>
     );
@@ -111,6 +114,9 @@ interface FaceVerificationProps {
 
     faceMatcher?: FaceMatcher | string;
     onVerified?: (distance: number) => void | Promise<void>;
+
+    disable?: boolean;
+    error?: string;
 }
 
 type FaceVerificationCapture = {
